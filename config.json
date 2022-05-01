@@ -1,0 +1,11 @@
+{
+	"urlsDir": "urls.txt",
+	"options":{
+		"useFileNames":"yes",
+		"downloadVideo":"yes",
+		"downloadAudio":"yes",
+		"fileNames":[
+			"WOAHOOOAHAHH"
+		]
+	}
+}
