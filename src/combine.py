@@ -1,34 +1,51 @@
 
 import subprocess
+import re
+import os
 
-def toMP4(fileName):
-	cmd = f'ffmpeg -i temp/{fileName} -c copy temp/{fileName.split(".")[0]}.mp4'
-	retVal = subprocess.call(cmd, shell=True,
+def toFormat(format,filePathIn,filePathOut,verbose):
+	if format == "mp4":
+		cmd = f'ffmpeg -i {filePathIn} -acodec copy -vcodec copy {filePathOut}'
+	elif format == "aac":
+		cmd = f'ffmpeg -i {filePathIn} -acodec aac {filePathOut}'
+	else:
+		return
+	if verbose:
+		retVal = subprocess.call(cmd, shell=True)
+	else:
+		retVal = subprocess.call(cmd, shell=True,
 		stdout=subprocess.DEVNULL,
 		stderr=subprocess.STDOUT)
 	if retVal == 0:
-		return True
-	return False
+		os.remove(filePathIn)
+	return retVal
 
-def muxTracks(video,audio):
-	cmd = f'ffmpeg -an -i temp/{video} -vn -i temp/{audio} -r 30 -acodec copy -vcodec copy output/{video.split("-")[1].split(".")[0]}.mp4'
-	retVal = subprocess.call(cmd, shell=True, 
-		stdout=subprocess.DEVNULL, 
+def muxTracks(video,audio,outDir,verbose):
+	cmd = f'ffmpeg -an -i temp/{video} -vn -i temp/{audio} -r 30 -acodec copy -vcodec copy {outDir}/{re.search(".*-(.*)$",video).group(1)}'
+	if verbose:
+		retVal = subprocess.call(cmd, shell=True)
+	else:
+		retVal = subprocess.call(cmd, shell=True,
+		stdout=subprocess.DEVNULL,
 		stderr=subprocess.STDOUT)
 	if retVal == 0:
-		return True
-	return False
+		os.remove(f'temp/{video}')
+		os.remove(f'temp/{audio}')
+	return retVal
 
-def autoCombine(video,audio):
-	if video.split(".")[1] != "mp4":
-		if toMP4(video) == False:
+def autoCombine(video,audio,outDir,config):
+	if video.split(".")[1] != config["outputVideoFormat"]:
+		newVid = "".join(video.split(".")[:-1])+"."+config["outputVideoFormat"]
+		if toFormat(config["outputVideoFormat"],"temp/"+video,"temp/"+newVid,(config["verbose"].lower()=="yes")) != 0:
 			return False
-		video = video.split(".")[0] + ".mp4"
-	if toMP4(audio) == False:
-		return False
-	audio = audio.split(".")[0] + ".mp4"
+		video = newVid
+	if audio.split(".")[1] != config["outputVideoFormat"]:
+		newAud = "".join(audio.split(".")[:-1])+"."+config["outputVideoFormat"]
+		if toFormat(config["outputVideoFormat"],"temp/"+audio,"temp/"+newAud,(config["verbose"].lower()=="yes")) != 0:
+			return False
+		audio = newAud
 
-	if muxTracks(video,audio) == False:
+	if muxTracks(video,audio,outDir,(config["verbose"].lower()=="yes")) == 0:
 		return False
 	return True
 

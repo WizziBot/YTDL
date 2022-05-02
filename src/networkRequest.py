@@ -3,29 +3,52 @@ from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 import time
 import json
 import re
+## Read below
 import os
 
-# Returns Links we need
-def getLinks(origUrl):
-
+def getLinks(origUrl,config):
+	delay = 15
+	retries = 3
 	# Enable Performance Logging of Chrome.
 	desired_capabilities = DesiredCapabilities.CHROME
 	desired_capabilities["goog:loggingPrefs"] = {"performance": "ALL"}
 
 	options = webdriver.ChromeOptions()
-	# Uncomment for setting to your own browser context, however might delete all your extensions, make a backup incase (..\User Data\Default\Extensions)
-	# profilePath = os.path.expanduser("~")+r'\AppData\Local\Google\Chrome\User Data'
-	# options.add_argument("user-data-dir="+profilePath)
+	if config["downloadVideo"].lower() != "yes":
+		options.add_argument('headless')
+		delay = 3
+	else:
+		## Uncomment for setting to your own browser context, however might delete all your extensions, make a backup incase (C:\Users\You\AppData\...\User Data\Default\Extensions)
+		profilePath = os.path.expanduser("~")+r'\AppData\Local\Google\Chrome\User Data'
+		options.add_argument("user-data-dir="+profilePath)
 	options.add_argument('log-level=3') # annoying console notis
 	options.add_argument("--ignore-certificate-errors")
-
+	
 	driver = webdriver.Chrome(executable_path="C:/chromedriver.exe",
 							chrome_options=options,
 							desired_capabilities=desired_capabilities)
-
 	# REQUEST
 	driver.get(origUrl)
-	time.sleep(15)
+	time.sleep(delay)
+	titleResults = driver.find_elements_by_css_selector('#container > h1 > yt-formatted-string')
+	titleResults2 = driver.find_elements_by_css_selector('#title > h1 > yt-formatted-string')
+	if len(titleResults2) > 0:
+		titleResults= titleResults2
+	title="default"
+	if len(titleResults) == 0:
+		title = re.search("v?=(.*)$",origUrl).group(1)
+	elif titleResults[0].text == "":
+		for _ in range(retries):
+			time.sleep(1)
+			titleResults = driver.find_elements_by_css_selector('#container > h1 > yt-formatted-string')
+			titleResults2 = driver.find_elements_by_css_selector('#title > h1 > yt-formatted-string')
+			if len(titleResults2) > 0:
+				titleResults= titleResults2
+			if titleResults[0].text != "":
+				title = titleResults[0].text.replace(" ","_")
+				break
+	else:
+		title = titleResults[0].text.replace(" ","_")
 	logs = driver.get_log("performance")
 
 	# network_log.json
@@ -59,15 +82,16 @@ def getLinks(origUrl):
 			if xre:
 				if float(xre.group(4)) < 60.0:
 					continue
-				# print("ITAG:",xre.group(1))
 				links.append((xre.string,xre.group(2),xre.group(3),xre.group(1)))
-				if len(links) >=6:
+				if len(links) >=10:
 					links.pop(0)
 		except Exception as e:
 			pass
-	return links
+	os.remove(json_file_path)
+	return title,links
 
 if __name__ == "__main__":
-	lnks = getLinks("https://www.youtube.com/watch?v=mfPCFQfOnLg")
-	for li in lnks:
-		print(li[0][:30],"   :   ",li[1],li[2],end="\n\n")
+	pass
+	# title,lnks = getLinks("https://www.youtube.com/watch?v=mfPCFQfOnLg")
+	# for li in lnks:
+	# 	print(li[0][:30],"   :   ",li[1],li[2],end="\n\n")

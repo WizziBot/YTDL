@@ -31,7 +31,7 @@ async def download(url, headers, save_path):
 			await file.write(await request.content.read())
 
 
-async def process(target):
+async def process(target,outDir):
 	url = target[0]
 	filename = target[1]
 	if url == "":
@@ -46,23 +46,25 @@ async def process(target):
 		file_parts.append(part_file_name)
 		print(f'Progress: {round((sizes[0] / size)*100)}%')
 		tasks.append(download(url, {'Range': f'bytes={sizes[0]}-{sizes[1]-1}'}, part_file_name))
-	print('Progress: 100%')
-	print('Generating File...')
+	print('Progress: 100%\n')
+	print('Generating File...\n')
 	await asyncio.gather(*tasks)
-	with open("temp/"+filename, 'wb') as wfd:
-		for f in file_parts:
+	with open(outDir+filename, 'wb') as wfd:
+		length = len(file_parts)
+		for i,f in enumerate(file_parts):
+			print(f'Assembling: {round(((i+1) / length)*100)}%')
 			with open(f, 'rb') as fd:
 				shutil.copyfileobj(fd, wfd)
 
 
-async def main(urls):
+async def main(urls,outDir):
 	if len(urls) < 1:
 		return
-	await asyncio.gather(*[process(url) for url in urls])
+	await asyncio.gather(*[process(url,outDir) for url in urls])
 
-def downloadUrls(urls):
+def downloadUrls(urls,outDir):
 	loop = asyncio.get_event_loop()
-	loop.run_until_complete(main(urls))
+	loop.run_until_complete(main(urls,outDir))
 
 if __name__ == '__main__':
 

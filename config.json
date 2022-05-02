@@ -1,11 +1,18 @@
 {
-	"urlsDir": "urls.txt",
+	"urlDirs": [
+		"urls.txt"
+	],
+	"outputDir":"output",
 	"options":{
-		"useFileNames":"yes",
-		"downloadVideo":"yes",
+		"useVideoTitle":"no",
+		"downloadVideo":"no",
 		"downloadAudio":"yes",
+		"outputVideoFormat":"mp4",
+		"outputAudioFormat":"webm",
+		"promptCombine":"yes",
+		"verbose":"yes",
 		"fileNames":[
-			"WOAHOOOAHAHH"
+			
 		]
 	}
 }
