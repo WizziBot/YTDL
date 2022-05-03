@@ -7,14 +7,14 @@ import re
 import os
 
 def getLinks(origUrl,config):
-	delay = 15
+	delay = 10
 	retries = 3
 	# Enable Performance Logging of Chrome.
 	desired_capabilities = DesiredCapabilities.CHROME
 	desired_capabilities["goog:loggingPrefs"] = {"performance": "ALL"}
 
 	options = webdriver.ChromeOptions()
-	if config["downloadVideo"].lower() != "yes":
+	if config["displayChrome"] != "yes":
 		options.add_argument('headless')
 		delay = 3
 	else:
@@ -29,6 +29,15 @@ def getLinks(origUrl,config):
 							desired_capabilities=desired_capabilities)
 	# REQUEST
 	driver.get(origUrl)
+	# Wait for ads and then erases browser data (avoid polluting the links with the ad media)
+	time.sleep(2)
+	isAds = driver.find_elements_by_css_selector('#player-overlay\:0')
+	while len(isAds) > 0:
+		# print("Halting for ads..")
+		driver.get_log("performance")
+		time.sleep(0.5)
+		isAds = driver.find_elements_by_css_selector('#player-overlay\:0')
+
 	time.sleep(delay)
 	titleResults = driver.find_elements_by_css_selector('#container > h1 > yt-formatted-string')
 	titleResults2 = driver.find_elements_by_css_selector('#title > h1 > yt-formatted-string')
@@ -58,8 +67,8 @@ def getLinks(origUrl,config):
 		# Iterates every logs and parses it using JSON
 		for log in logs:
 			network_log = json.loads(log["message"])["message"]
-			if("Network.response" in network_log["method"]
-                    or "Network.request" in network_log["method"]
+			if("Network.request" in network_log["method"]
+                    or "Network.response" in network_log["method"]
                     or "Network.webSocket" in network_log["method"]):
 				f.write(json.dumps(network_log)+",")
 		f.write("{}]")
@@ -80,9 +89,7 @@ def getLinks(origUrl,config):
 			#RegExp
 			xre = re.search("^https://rr[1|2|3|4|5]---sn-.*\.googlevideo\.com/videoplayback?.*itag=([0-9]*).*mime=(.*)%2F([a-z0-9]*).*&dur=([0-9]*\.[0-9]*)", url)
 			if xre:
-				if float(xre.group(4)) < 60.0:
-					continue
-				links.append((xre.string,xre.group(2),xre.group(3),xre.group(1)))
+				links.append((xre.string,xre.group(2),xre.group(3),str(xre.group(1)),xre.group(4)))
 				if len(links) >=10:
 					links.pop(0)
 		except Exception as e:
@@ -92,6 +99,12 @@ def getLinks(origUrl,config):
 
 if __name__ == "__main__":
 	pass
-	# title,lnks = getLinks("https://www.youtube.com/watch?v=mfPCFQfOnLg")
-	# for li in lnks:
-	# 	print(li[0][:30],"   :   ",li[1],li[2],end="\n\n")
+	title,lnks = getLinks("https://www.youtube.com/watch?v=A-H-xZ5ZXgo",
+	{"useVideoTitle":"yes",
+		"downloadVideo":"yes",
+		"downloadAudio":"yes",
+		"outputVideoFormat":"mp4",
+		"outputAudioFormat":"webm",
+		"promptCombine":"no",
+		"verbose":"no",
+	})
