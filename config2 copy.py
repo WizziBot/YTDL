@@ -1,9 +1,7 @@
 
-from distutils.command.config import config
 import sys
 from tkinter import Tk, ttk, N, W, E, S, Frame, StringVar, BooleanVar
 from tkinter.scrolledtext import ScrolledText
-import json
 
 def rgbGet(rgb):
     return "#%02x%02x%02x" % rgb  
@@ -41,7 +39,6 @@ class MainGUI():
 
 	def __init__(self):
 		# Tk.__init__(self)
-		self.loadConfig()
 		self.root = Tk()
 		self.root.title("YTDL CONFIGURATION")
 		self.root.geometry("600x400")
@@ -55,7 +52,6 @@ class MainGUI():
 		self.mainwindow.grid(column=0, row=0, sticky=(N, W, E, S))
 		self.mainwindow.grid_columnconfigure(1,weight=1)
 		self.mainwindow.grid_rowconfigure(2,weight=1)
-		self.max_row = 5
 		self.mainFrameInit()
 		self.cmdLogInit()
 		self.mainLayoutInit()
@@ -63,7 +59,13 @@ class MainGUI():
 		for child in self.mainframe.winfo_children(): 
 			child.grid_configure(padx=5, pady=5)
 
-		# self.cfg1_entry.focus()
+		self.cfg1_entry.focus()
+		# self.root.bind("<Return>", self.calculate)
+
+		self.log_widget = ScrolledText(self.bottomframe, height=4, width=120, font=self.font,background=rgbGet((35,45,60)),foreground="white")
+		self.log_widget.grid(column=1,row=1,sticky=(N,S,E,W))
+
+		self.redirect_logging()
 
 	def mainFrameInit(self):
 		self.mainframe = ttk.Frame(self.mainwindow, padding="10 25 10 15" ,style="DG.TFrame")
@@ -71,40 +73,23 @@ class MainGUI():
 		self.mainframe.grid_columnconfigure(0,weight=1)
 		self.mainframe.grid_columnconfigure(4,weight=1)
 		self.mainframe.grid_rowconfigure(0,weight=1)
-		self.mainframe.grid_rowconfigure(self.max_row+1,weight=1)
+		self.mainframe.grid_rowconfigure(4,weight=1)
 
 	def cmdLogInit(self):
 		self.bottomframe = ttk.Frame(self.mainwindow)
 		self.bottomframe.grid(column=1, row=2, sticky=(N, W, E, S))
 		self.bottomframe.grid_columnconfigure(1,weight=1)
 		self.bottomframe.grid_rowconfigure(1,weight=1)
-		self.log_widget = ScrolledText(self.bottomframe, height=4, width=120, font=self.font,background=rgbGet((35,45,60)),foreground="white")
-		self.log_widget.grid(column=1,row=1,sticky=(N,S,E,W))
-		self.redirect_logging()
 
+	# def calculate(self,*args):
+	# 	try:
+	# 		value = float(self.cfg1.get())
+	# 		self.cfg2.set(int(0.3048 * value * 10000.0 + 0.5)/10000.0)
+	# 	except ValueError:
+	# 		pass
 	def saveConfig(self):
-		self.config["urlsDir"] = self.Entries[0][0].get()
-		self.config["outputDir"] = self.Entries[1][0].get()
-		self.config["options"]["outputVideoFormat"] = self.Entries[2][0].get()
-		self.config["options"]["outputAudioFormat"] = self.Entries[3][0].get()
-		with open("config.json","w") as f:
-			f.write(json.dumps(self.config,indent=4, sort_keys=True))
 		print("Config Saved!")
 	
-	def loadConfig(self):
-		with open("config.json","r") as f:
-			raw = f.read()
-			if raw == "":
-				print("Error: Could not load config.json")
-				exit(1)
-			self.config = json.loads(raw)
-	
-	def setDefaultEntries(self):
-		self.Entries[0][0].set(self.config["urlsDir"])
-		self.Entries[1][0].set(self.config["outputDir"])
-		self.Entries[2][0].set(self.config["options"]["outputVideoFormat"])
-		self.Entries[3][0].set(self.config["options"]["outputAudioFormat"])
-
 	def vars(self,*args):
 		print('var: {}'.format(self.cfg1.get()))
 		print('data: {}'.format(args[0]))
@@ -117,44 +102,29 @@ class MainGUI():
 		sys.stderr = sys.__stderr__
 
 	def redirect_logging(self):
-		self.logger = PrintLogger(self.log_widget)
-		sys.stdout = self.logger
-		sys.stderr = self.logger
-
-	def mkLabels(self,texts):
-		for i,text in enumerate(texts,1):
-			lbl = ttk.Label(self.mainframe, text=text, style="DG.TLabel").grid(column=1, row=i, sticky=W)
-			self.Labels.append(lbl)
+		logger = PrintLogger(self.log_widget)
+		sys.stdout = logger
+		sys.stderr = logger
 
 	def mainLayoutInit(self):
 		self.Entries = []
-		self.Labels = []
-		for i in range(1,self.max_row):
-			entryStr = StringVar()
-			entryW = ttk.Entry(self.mainframe, width=20, textvariable=entryStr)
-			entryW.grid(column=2,row=i,sticky=(W,E))
-			self.Entries.append((entryStr,entryW))
-		self.setDefaultEntries()
-		self.mkLabels(["Urls file:","Output Folder:","Video Format:","Audio Format:"])
-		# self.cfg1 = StringVar(value="something")
-		# # self.cfg1.trace('w', self.vars)
-		# self.cfg1_entry = ttk.Entry(self.mainframe, width=20, textvariable=self.cfg1)
-		# self.cfg1_entry.grid(column=2, row=1, sticky=(W, E))
+		self.cfg1 = StringVar(value="something")
+		# self.cfg1.trace('w', self.vars)
+		self.cfg1_entry = ttk.Entry(self.mainframe, width=30, textvariable=self.cfg1)
+		self.cfg1_entry.grid(column=2, row=1, sticky=(W, E))
 
-		# self.cfg2 = StringVar()
-		# ttk.Entry(self.mainframe, textvariable=self.cfg2, width=20).grid(column=2, row=2, sticky=(W, E))
+		self.cfg2 = StringVar()
+		ttk.Entry(self.mainframe, textvariable=self.cfg2, width=30).grid(column=2, row=2, sticky=(W, E))
 
-		ttk.Button(self.mainframe, text="SAVE", command=self.saveConfig, style="DG.TButton").grid(column=3, row=self.max_row, sticky=(N,E,S,W))
+		ttk.Button(self.mainframe, text="SAVE", command=self.saveConfig, style="DG.TButton").grid(column=3, row=3, sticky=(N,E,S,W))
 
-
-
-		# ttk.Label(self.mainframe, text="CFG1", style="DG.TLabel").grid(column=1, row=1, sticky=W)
+		ttk.Label(self.mainframe, text="CFG1", style="DG.TLabel").grid(column=1, row=1, sticky=W)
 		self.testbool = BooleanVar()
 		self.testbool.trace('w',self.varb)
 		c1 = ttk.Checkbutton(self.mainframe, text = "OPTION",variable=self.testbool,style="DG.TCheckbutton")
-		c1.grid(row = self.max_row, column = 1, stick=E, columnspan = 1)
+		c1.grid(row = 3, column = 1, stick=E, columnspan = 1)
 
-		# ttk.Label(self.mainframe, text="CFG2", style="DG.TLabel").grid(column=1, row=2, sticky=W)
+		ttk.Label(self.mainframe, text="CFG2", style="DG.TLabel").grid(column=1, row=2, sticky=W)
 
 
 if __name__ == "__main__":

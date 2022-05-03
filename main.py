@@ -15,6 +15,30 @@ def validateURLS(urls):
 			print(f'Error: Invalid URL ({url})')
 			exit(1)
 
+def verifyConfig(cfg):
+	print(cfg)
+	for key, value in cfg.items():
+		if key == "urlsDir" and value == "":
+			print("Error: Missing Url Directory.")
+			exit(1)
+		elif key == "outDir" and value == "":
+			print("Error: Missing Output Directory.")
+			exit(1)
+		elif key == "options":
+			for k,v in value.items():
+				if ((k == "useVideoTitle" and v != "yes" and v != "no")
+					or (k == "displayChrome" and v != "yes" and v != "no")
+					or (k == "downloadVideo" and v != "yes" and v != "no")
+					or (k == "downloadAudio" and v != "yes" and v != "no")
+					or (k == "promptCombine" and v != "yes" and v != "no")
+					or (k == "verbose" and v != "yes" and v != "no")):
+					print("Error: Invalid entry for yes/no option '"+k+"'.")
+					exit(1)
+				elif (k == "outputVideoFormat" and v == "") or (k == "outputAudioFormat" and v == ""):
+					print("Error: '"+k+"' must have a value.")
+					exit(1)
+
+
 def YTDL_Links(origUrl,config,i,itags):
 	vidEn = True
 	audEn = True
@@ -50,8 +74,13 @@ def YTDL_Links(origUrl,config,i,itags):
 				videoSecs = round(float(lnk[4]) % 60)
 	if (videolnk == "" and vidEn) or (audiolnk == "" and audEn):
 		return False, (0,0)
+	filePrefix = ""
 	if config["useVideoTitle"] != "yes":
-		filePrefix = config["fileNames"][i].replace(" ","_")
+		try:
+			filePrefix = config["fileNames"][i].replace(" ","_")
+		except IndexError:
+			print("Error: Insuficient file names. (Check config.json)")
+			exit(1)
 	else:
 		filePrefix = title
 	return ((videolnk,"video-"+filePrefix+"."+videotyp),(audiolnk,"audio-"+filePrefix+"."+audiotyp)), (videoMins,videoSecs)
@@ -59,14 +88,18 @@ def YTDL_Links(origUrl,config,i,itags):
 if __name__ == "__main__":
 	with open("config.json","r") as f:
 		raw = f.read()
+		if raw == "":
+			print("Error: Could not load config.json")
+			exit(1)
 		data = json.loads(raw)
+		verifyConfig(data)
 		urlsDir = data["urlsDir"]
 		outDir = data["outputDir"]
 		config = data["options"]
 	with open("src/itags.json","r") as f:
 		raw2 = f.read()
 		if raw2 == "":
-			print("Error: Could not load Itags")
+			print("Error: Could not load itags.json")
 			exit(1)
 		itags = json.loads(raw2)
 

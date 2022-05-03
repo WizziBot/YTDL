@@ -1,17 +1,15 @@
 {
-	"urlsDir": "urls.txt",
-	"outputDir": "tests",
-	"options":{
-		"useVideoTitle":"yes",
-		"displayChrome":"yes",
-		"downloadVideo":"no",
-		"downloadAudio":"yes",
-		"outputVideoFormat":"mp4",
-		"outputAudioFormat":"aac",
-		"promptCombine":"yes",
-		"verbose":"no",
-		"fileNames":[
-			
-		]
-	}
+    "options": {
+        "displayChrome": "yes",
+        "downloadAudio": "yes",
+        "downloadVideo": "no",
+        "fileNames": ["Smoke Sessions"],
+        "outputAudioFormat": "webm",
+        "outputVideoFormat": "mp4",
+        "promptCombine": "yes",
+        "useVideoTitle": "no",
+        "verbose": "no"
+    },
+    "outputDir": "tests",
+    "urlsDir": "urls.txt"
 }
