@@ -55,7 +55,7 @@ class MainGUI():
 		self.mainwindow.grid(column=0, row=0, sticky=(N, W, E, S))
 		self.mainwindow.grid_columnconfigure(1,weight=1)
 		self.mainwindow.grid_rowconfigure(2,weight=1)
-		self.max_row = 5
+		self.max_row = 6
 		self.mainFrameInit()
 		self.cmdLogInit()
 		self.mainLayoutInit()
@@ -69,7 +69,7 @@ class MainGUI():
 		self.mainframe = ttk.Frame(self.mainwindow, padding="10 25 10 15" ,style="DG.TFrame")
 		self.mainframe.grid(column=1, row=1, sticky=(N, W, E))
 		self.mainframe.grid_columnconfigure(0,weight=1)
-		self.mainframe.grid_columnconfigure(4,weight=1)
+		self.mainframe.grid_columnconfigure(5,weight=1)
 		self.mainframe.grid_rowconfigure(0,weight=1)
 		self.mainframe.grid_rowconfigure(self.max_row+1,weight=1)
 
@@ -99,11 +99,31 @@ class MainGUI():
 				exit(1)
 			self.config = json.loads(raw)
 	
-	def setDefaultEntries(self):
+	def setEntries(self):
+		for i in range(2,self.max_row):
+			entryStr = StringVar()
+			entryW = ttk.Entry(self.mainframe, width=20, textvariable=entryStr)
+			entryW.grid(column=2,row=i,sticky=(W,E))
+			self.Entries.append((entryStr,entryW))
 		self.Entries[0][0].set(self.config["urlsDir"])
 		self.Entries[1][0].set(self.config["outputDir"])
 		self.Entries[2][0].set(self.config["options"]["outputVideoFormat"])
 		self.Entries[3][0].set(self.config["options"]["outputAudioFormat"])
+	
+	def setOptions(self,labels):
+		i=0
+		j=0
+		t=0
+		length = len(labels[0]) + len(labels[1])
+		while t < length:
+			toggleOpt = BooleanVar()
+			optionW = ttk.Checkbutton(self.mainframe, text = labels[j][i],variable=toggleOpt,style="DG.TCheckbutton")\
+				.grid(row = 2 + i, column = 3 + j, stick=W, columnspan = 1)
+			self.Options.append((toggleOpt,optionW))
+			i = (i+1) % len(labels[0])
+			j = (j+1) % len(labels)
+			t += 1
+
 
 	def vars(self,*args):
 		print('var: {}'.format(self.cfg1.get()))
@@ -122,39 +142,27 @@ class MainGUI():
 		sys.stderr = self.logger
 
 	def mkLabels(self,texts):
-		for i,text in enumerate(texts,1):
+		for i,text in enumerate(texts,2):
 			lbl = ttk.Label(self.mainframe, text=text, style="DG.TLabel").grid(column=1, row=i, sticky=W)
 			self.Labels.append(lbl)
 
 	def mainLayoutInit(self):
 		self.Entries = []
 		self.Labels = []
-		for i in range(1,self.max_row):
-			entryStr = StringVar()
-			entryW = ttk.Entry(self.mainframe, width=20, textvariable=entryStr)
-			entryW.grid(column=2,row=i,sticky=(W,E))
-			self.Entries.append((entryStr,entryW))
-		self.setDefaultEntries()
+		self.Options = []
+		self.setEntries()
 		self.mkLabels(["Urls file:","Output Folder:","Video Format:","Audio Format:"])
-		# self.cfg1 = StringVar(value="something")
-		# # self.cfg1.trace('w', self.vars)
-		# self.cfg1_entry = ttk.Entry(self.mainframe, width=20, textvariable=self.cfg1)
-		# self.cfg1_entry.grid(column=2, row=1, sticky=(W, E))
-
-		# self.cfg2 = StringVar()
-		# ttk.Entry(self.mainframe, textvariable=self.cfg2, width=20).grid(column=2, row=2, sticky=(W, E))
+		self.setOptions([["Display Chrome","Download Video","Use YT Title"],["Verbose","Download Audio","Prompt Combine"]])
+		# Special widgets
+		ttk.Label(self.mainframe, text = "YTDL CONFIGURATION", style="DG.TLabel")\
+			.grid(column=2, row=1, columnspan=2)
 
 		ttk.Button(self.mainframe, text="SAVE", command=self.saveConfig, style="DG.TButton").grid(column=3, row=self.max_row, sticky=(N,E,S,W))
-
-
-
-		# ttk.Label(self.mainframe, text="CFG1", style="DG.TLabel").grid(column=1, row=1, sticky=W)
-		self.testbool = BooleanVar()
-		self.testbool.trace('w',self.varb)
-		c1 = ttk.Checkbutton(self.mainframe, text = "OPTION",variable=self.testbool,style="DG.TCheckbutton")
-		c1.grid(row = self.max_row, column = 1, stick=E, columnspan = 1)
-
-		# ttk.Label(self.mainframe, text="CFG2", style="DG.TLabel").grid(column=1, row=2, sticky=W)
+		# ###
+		# self.testbool = BooleanVar()
+		# self.testbool.trace('w',self.varb)
+		# c1 = ttk.Checkbutton(self.mainframe, text = "OPTION",variable=self.testbool,style="DG.TCheckbutton")
+		# c1.grid(row = self.max_row, column = 1, stick=E, columnspan = 1)
 
 
 if __name__ == "__main__":

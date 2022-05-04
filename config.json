@@ -7,9 +7,9 @@
         "outputAudioFormat": "webm",
         "outputVideoFormat": "mp4",
         "promptCombine": "yes",
-        "useVideoTitle": "no",
+        "useYoutubeTitle": "no",
         "verbose": "no"
     },
-    "outputDir": "tests",
+    "outputDir": "tests2",
     "urlsDir": "urls.txt"
 }

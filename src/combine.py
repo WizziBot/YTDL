@@ -46,13 +46,7 @@ def autoCombine(video,audio,outDir,config):
 		audio = newAud
 
 	if muxTracks(video,audio,outDir,(config["verbose"]=="yes")) != 0:
-		try:
-			os.remove(f'temp/{video}')
-			os.remove(f'temp/{audio}')
-		except Exception as e:
-			pass
-		finally:
-			return False
+		return False
 	return True
 
 if __name__ == "__main__":
