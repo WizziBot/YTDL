@@ -100,7 +100,7 @@ def getLinks(origUrl,config):
 if __name__ == "__main__":
 	pass
 	title,lnks = getLinks("https://www.youtube.com/watch?v=A-H-xZ5ZXgo",
-	{"useVideoTitle":"yes",
+	{"useYoutubeTitle":"yes",
 		"downloadVideo":"yes",
 		"downloadAudio":"yes",
 		"outputVideoFormat":"mp4",

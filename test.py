@@ -14,8 +14,9 @@
 
 # with open("C:/Users/Rodriguez/OneDrive/Desktop/YTDL/test.txt","r") as f:
 # 	print(f.read())
-obj = {"options": {"displayChrome": "yes", "downloadAudio": "yes", "downloadVideo": "no", "fileNames": ["Smoke Sessions"], "outputAudioFormat": "aac", "outputVideoFormat": "mp4", "promptCombine": "yes", "useVideoTitle": "no", "verbose": "yes"}, "outputDir": "tests", "urlsDir": "urls.txt"}
-for key in obj:
-	print(key)
-	# print(val)
-	# print(other)
+# obj = {"options": {"displayChrome": "yes", "downloadAudio": "yes", "downloadVideo": "no", "fileNames": ["Smoke Sessions"], "outputAudioFormat": "aac", "outputVideoFormat": "mp4", "promptCombine": "yes", "useVideoTitle": "no", "verbose": "yes"}, "outputDir": "tests", "urlsDir": "urls.txt"}
+# for key in obj:
+# 	print(key)
+# 	# print(val)
+# 	# print(other)
+

@@ -3,6 +3,8 @@ import src.downloadFiles as dl
 import src.networkRequest as nr
 import src.combine as cmb
 import re
+import time
+import asyncio
 
 def validateURLS(urls):
 	for url in urls:
@@ -16,7 +18,6 @@ def validateURLS(urls):
 			exit(1)
 
 def verifyConfig(cfg):
-	print(cfg)
 	for key, value in cfg.items():
 		if key == "urlsDir" and value == "":
 			print("Error: Missing Url Directory.")
@@ -26,7 +27,7 @@ def verifyConfig(cfg):
 			exit(1)
 		elif key == "options":
 			for k,v in value.items():
-				if ((k == "useVideoTitle" and v != "yes" and v != "no")
+				if ((k == "useYoutubeTitle" and v != "yes" and v != "no")
 					or (k == "displayChrome" and v != "yes" and v != "no")
 					or (k == "downloadVideo" and v != "yes" and v != "no")
 					or (k == "downloadAudio" and v != "yes" and v != "no")
@@ -75,7 +76,7 @@ def YTDL_Links(origUrl,config,i,itags):
 	if (videolnk == "" and vidEn) or (audiolnk == "" and audEn):
 		return False, (0,0)
 	filePrefix = ""
-	if config["useVideoTitle"] != "yes":
+	if config["useYoutubeTitle"] != "yes":
 		try:
 			filePrefix = config["fileNames"][i].replace(" ","_")
 		except IndexError:
@@ -85,7 +86,12 @@ def YTDL_Links(origUrl,config,i,itags):
 		filePrefix = title
 	return ((videolnk,"video-"+filePrefix+"."+videotyp),(audiolnk,"audio-"+filePrefix+"."+audiotyp)), (videoMins,videoSecs)
 
-if __name__ == "__main__":
+def mainloop(isGUI,smth,loop):
+	asyncio.set_event_loop(loop)
+	loop.run_until_complete(main(isGUI,smth))
+
+
+def main(isGUI,*args):
 	with open("config.json","r") as f:
 		raw = f.read()
 		if raw == "":
@@ -105,7 +111,7 @@ if __name__ == "__main__":
 
 	with open(urlsDir,"r") as f:
 		urls = f.read().splitlines()
-	if config["useVideoTitle"] != "yes":
+	if config["useYoutubeTitle"] != "yes":
 		if config["fileNames"]:
 			if len(config["fileNames"]) != len(urls):
 				print("Error: Insufficient File Names")
@@ -121,9 +127,15 @@ if __name__ == "__main__":
 		# print(targets)
 		comb = ""
 		if config["downloadVideo"] == "yes" and config["downloadAudio"] == "yes" and config["promptCombine"] == "yes":
-			comb = input("\nCombine Audio and Video?[y/n]: ")
-		print()
-		if config["useVideoTitle"] != "yes":
+			if isGUI:
+				print("\nCombine Audio and Video? [y/n]")
+				# insert callback here (will contain rest of main)
+				args[0]("something")
+				comb = "y"
+			else:
+				comb = input("\nCombine Audio and Video? [y/n]: ")
+				print()
+		if config["useYoutubeTitle"] != "yes":
 			print("[Downloading] ("+config["fileNames"][i]+") ("+str(videoTime[0])+"m "+str(videoTime[1])+"s"+")\n")
 		else:
 			print("[Downloading] ("+"-".join(targets[0][1].split("-")[1:])+") ("+str(videoTime[0])+"m "+str(videoTime[1])+"s"+")\n")
@@ -156,3 +168,6 @@ if __name__ == "__main__":
 			elif config["downloadAudio"] == "yes":
 				dl.downloadUrls([targets[1]],outDir+"/")
 	print("\n----DONE----\n")
+
+if __name__ == "__main__":
+	main(False)

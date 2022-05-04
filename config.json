@@ -2,11 +2,15 @@
     "options": {
         "displayChrome": "yes",
         "downloadAudio": "yes",
-        "downloadVideo": "no",
-        "fileNames": ["Smoke Sessions"],
-        "outputAudioFormat": "webm",
+        "downloadVideo": "yes",
+        "fileNames": [
+            "Drunk Arcade",
+            "Australia",
+            "Witcher in 8k"
+        ],
+        "outputAudioFormat": "aac",
         "outputVideoFormat": "mp4",
-        "promptCombine": "yes",
+        "promptCombine": "no",
         "useYoutubeTitle": "no",
         "verbose": "no"
     },
