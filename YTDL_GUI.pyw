@@ -11,7 +11,7 @@ import threading
 def rgbGet(rgb):
     return "#%02x%02x%02x" % rgb  
 
-class PrintLogger(object):  # create file like object
+class PrintLogger(object):
 
 	def __init__(self, textbox):  # pass reference to text widget
 		self.textbox = textbox  # keep ref
@@ -22,7 +22,7 @@ class PrintLogger(object):  # create file like object
 		self.textbox.see("end")  # scroll to end
 		self.textbox.configure(state="disabled")  # make field readonly
 
-	def flush(self):  # needed for file like object
+	def flush(self):
 		pass
 
 def styleConfig(style,font):
