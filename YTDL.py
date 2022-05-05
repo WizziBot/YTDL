@@ -86,9 +86,9 @@ def YTDL_Links(origUrl,config,i,itags):
 		filePrefix = title
 	return ((videolnk,"video-"+filePrefix+"."+videotyp),(audiolnk,"audio-"+filePrefix+"."+audiotyp)), (videoMins,videoSecs)
 
-def mainloop(isGUI,smth,loop):
+def mainloop(smth,loop):
 	asyncio.set_event_loop(loop)
-	loop.run_until_complete(main(isGUI,smth))
+	loop.run_until_complete(main(True,smth))
 
 
 def main(isGUI,*args):

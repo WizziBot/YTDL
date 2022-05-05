@@ -1,12 +1,11 @@
 
-from distutils.command.config import config
 import sys
-from tkinter import Tk, ttk, N, W, E, S, Frame, StringVar, BooleanVar
+from tkinter import Tk, ttk, N, W, E, S, StringVar, BooleanVar, messagebox
 from tkinter.scrolledtext import ScrolledText
 import json
 import time
 import asyncio
-from YTDL import mainloop
+from test2 import mainloop
 import threading
 
 def rgbGet(rgb):
@@ -38,6 +37,8 @@ def styleConfig(style,font):
 	style.layout("DG.TButton",[('Button.button',{'sticky': 'nswe', 'children': [('Button.padding', {'sticky': 'nswe', 'children': [('Button.label', {'sticky': 'nswe'})]})]})])
 	style.layout("DG.TCheckbutton",[('Checkbutton.padding',{'sticky': 'nswe', 'children': [('Checkbutton.indicator',{'side': 'left', 'sticky': ''}), ('Checkbutton.label',{'sticky': 'nswe'})]})])
 
+global OptInStr
+OptInStr = ""
 
 class MainGUI():
 	def __init__(self):
@@ -155,25 +156,44 @@ class MainGUI():
 			self.Labels.append(lbl)
 
 	def combineY(self):
-		pass
+		global OptInStr
+		OptInStr = "y"
 	def combineN(self):
-		pass
-	def callback1(smth):
-		print("hey")
-		print(smth)
+		global OptInStr
+		OptInStr = "n"
+
+	async def waitUntil(arg):
+		MsgBox = messagebox.askquestion ('Exit Application','Are you sure you want to exit the application',icon = 'warning')
+		if MsgBox == 'yes':
+			pass
+		else:
+			messagebox.showinfo('Return','You will now return to the application screen')
+		print(arg)
+		global OptInStr
+		while OptInStr == "":
+			print("Checking")
+			time.sleep(1)
+			pass
+		temp = OptInStr
+		OptInStr = ""
+		return temp
+	
 	def runmain(self):
-		self.mainRunning = True
-		loop = asyncio.new_event_loop()
-		self.t = threading.Thread(target=mainloop,args=(True,self.callback1,loop))
-		self.t.start()
-		# asyncio.run(main(True,self.callback1))
+		if self.mainRunning == False:
+			self.mainRunning = True
+			self.mainloop = asyncio.new_event_loop()
+			self.t = threading.Thread(target=mainloop,args=(self.waitUntil,self.mainloop))
+			self.t.start()
 
 	def on_closing(self):
+		global OptInStr
 		self.reset_logging()
-		print("A")
 		if self.mainRunning:
-			print("E")
+			OptInStr = "DONE"
+			print("CLOSED GUI")
 			self.t.join()
+			self.mainloop.close()
+			self.mainRunning = False
 		self.root.destroy()
 
 	def mainLayoutInit(self):
