@@ -5,7 +5,7 @@ from tkinter.scrolledtext import ScrolledText
 import json
 import time
 import asyncio
-from test2 import mainloop
+from YTDL import mainloop
 import threading
 
 def rgbGet(rgb):
@@ -37,9 +37,6 @@ def styleConfig(style,font):
 	style.layout("DG.TButton",[('Button.button',{'sticky': 'nswe', 'children': [('Button.padding', {'sticky': 'nswe', 'children': [('Button.label', {'sticky': 'nswe'})]})]})])
 	style.layout("DG.TCheckbutton",[('Checkbutton.padding',{'sticky': 'nswe', 'children': [('Checkbutton.indicator',{'side': 'left', 'sticky': ''}), ('Checkbutton.label',{'sticky': 'nswe'})]})])
 
-global OptInStr
-OptInStr = ""
-
 class MainGUI():
 	def __init__(self):
 		# Tk.__init__(self)
@@ -59,7 +56,7 @@ class MainGUI():
 		self.mainwindow.grid(column=0, row=0, sticky=(N, W, E, S))
 		self.mainwindow.grid_columnconfigure(1,weight=1)
 		self.mainwindow.grid_rowconfigure(2,weight=1)
-		self.max_row = 7
+		self.max_row = 6
 		self.mainFrameInit()
 		self.cmdLogInit()
 		self.mainLayoutInit()
@@ -85,15 +82,19 @@ class MainGUI():
 		self.redirect_logging()
 
 	def saveConfig(self):
-		self.config["urlsDir"] = self.Entries[0][0].get()
-		self.config["outputDir"] = self.Entries[1][0].get()
-		self.config["options"]["outputVideoFormat"] = self.Entries[2][0].get()
-		self.config["options"]["outputAudioFormat"] = self.Entries[3][0].get()
+		self.config["urlsDir"] = self.Entries[0][0].get().strip()
+		self.config["outputDir"] = self.Entries[1][0].get().strip()
+		self.config["options"]["outputVideoFormat"] = self.Entries[2][0].get().strip()
+		self.config["options"]["outputAudioFormat"] = self.Entries[3][0].get().strip()
 
 		for opt in self.Options:
 			self.config["options"][opt[1]] = "yes" if opt[0].get() == True else "no"
 
-		self.config["options"]["fileNames"] = self.fileNames.get().split(";")
+		fileNames =  self.fileNames.get().strip()
+		if fileNames == "":
+			self.config["options"]["fileNames"] = []
+		else:
+			self.config["options"]["fileNames"] = fileNames.split(";")
 
 		with open("config.json","w") as f:
 			f.write(json.dumps(self.config,indent=4, sort_keys=True))
@@ -155,41 +156,34 @@ class MainGUI():
 			lbl = ttk.Label(self.mainframe, text=text, style="DG.TLabel").grid(column=1, row=i, sticky=W)
 			self.Labels.append(lbl)
 
-	def combineY(self):
-		global OptInStr
-		OptInStr = "y"
-	def combineN(self):
-		global OptInStr
-		OptInStr = "n"
-
 	async def waitUntil(arg):
-		MsgBox = messagebox.askquestion ('Exit Application','Are you sure you want to exit the application',icon = 'warning')
-		if MsgBox == 'yes':
-			pass
+		MsgBox = messagebox.askquestion('YTDL','Combine Audio and Video tracks?',icon = 'info')
+		print("SELECTED: "+MsgBox+"\n")
+		if MsgBox == "yes":
+			return "y"
 		else:
-			messagebox.showinfo('Return','You will now return to the application screen')
-		print(arg)
-		global OptInStr
-		while OptInStr == "":
-			print("Checking")
-			time.sleep(1)
-			pass
-		temp = OptInStr
-		OptInStr = ""
-		return temp
+			return "n"
 	
 	def runmain(self):
 		if self.mainRunning == False:
 			self.mainRunning = True
 			self.mainloop = asyncio.new_event_loop()
-			self.t = threading.Thread(target=mainloop,args=(self.waitUntil,self.mainloop))
+			if self.config["options"]["promptCombine"]:
+				self.t = threading.Thread(target=mainloop,args=(self.waitUntil,self.mainloop))
+			else:
+				self.t = threading.Thread(target=mainloop,args=(0,self.mainloop))
+			self.t.start()
+		elif not self.t.is_alive():
+			self.mainloop = asyncio.new_event_loop()
+			if self.config["options"]["promptCombine"]:
+				self.t = threading.Thread(target=mainloop,args=(self.waitUntil,self.mainloop))
+			else:
+				self.t = threading.Thread(target=mainloop,args=(0,self.mainloop))
 			self.t.start()
 
 	def on_closing(self):
-		global OptInStr
 		self.reset_logging()
-		if self.mainRunning:
-			OptInStr = "DONE"
+		if hasattr(self,"t") and self.t.is_alive():
 			print("CLOSED GUI")
 			self.t.join()
 			self.mainloop.close()
@@ -216,11 +210,8 @@ class MainGUI():
 			.grid(column=3,row=6,columnspan=2,sticky=(W,E))
 		self.fileNames.set(";".join(self.config["options"]["fileNames"]))
 
-		ttk.Button(self.mainframe, text="SAVE", command=self.saveConfig, style="DG.TButton").grid(column=1, row=self.max_row-1, sticky=(N,E,S,W))
-		ttk.Button(self.mainframe, text="RUN", command=self.runmain, style="DG.TButton").grid(column=2, row=self.max_row-1, sticky=(N,E,S,W))
-		ttk.Button(self.mainframe, text="Combine (y)", command=self.combineY, style="DG.TButton").grid(column=1, row=self.max_row, sticky=(N,E,S,W))
-		ttk.Button(self.mainframe, text="Combine (n)", command=self.combineN, style="DG.TButton").grid(column=2, row=self.max_row, sticky=(N,E,S,W))
-
+		ttk.Button(self.mainframe, text="SAVE", command=self.saveConfig, style="DG.TButton").grid(column=1, row=self.max_row, sticky=(N,E,S,W))
+		ttk.Button(self.mainframe, text="RUN", command=self.runmain, style="DG.TButton").grid(column=2, row=self.max_row, sticky=(N,E,S,W))
 		# ###
 
 

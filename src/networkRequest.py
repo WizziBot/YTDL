@@ -7,7 +7,7 @@ import re
 import os
 
 def getLinks(origUrl,config):
-	delay = 10
+	delay = 5
 	retries = 3
 	# Enable Performance Logging of Chrome.
 	desired_capabilities = DesiredCapabilities.CHROME
@@ -55,9 +55,23 @@ def getLinks(origUrl,config):
 				titleResults= titleResults2
 			if titleResults[0].text != "":
 				title = titleResults[0].text.replace(" ","_")
+				modtitle = ""
+				for x in title:
+					if x=="?" or x=="*" or x=="|" or x=="<" or x==">" or x=="\\" or x=="/" or x==":" or x=="\"":
+						continue
+					else:
+						modtitle += x
+				title = modtitle
 				break
 	else:
 		title = titleResults[0].text.replace(" ","_")
+		modtitle = ""
+		for x in title:
+			if x=="?" or x=="*" or x=="|" or x=="<" or x==">" or x=="\\" or x=="/" or x==":" or x=="\"":
+				continue
+			else:
+				modtitle += x
+		title = modtitle
 	logs = driver.get_log("performance")
 
 	# network_log.json

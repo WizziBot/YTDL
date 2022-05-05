@@ -22,24 +22,27 @@ import threading
 # 	# print(val)
 # 	# print(other)
 
-def callbackFunc(var):
-	print("Callback: "+var)
+# def callbackFunc(var):
+# 	print("Callback: "+var)
 
-def waitFunc(callb,loop):
-	asyncio.set_event_loop(loop)
-	getval = loop.run_until_complete()
-	time.sleep(5)
-	callb("something")
+# def waitFunc(callb,loop):
+# 	asyncio.set_event_loop(loop)
+# 	getval = loop.run_until_complete()
+# 	time.sleep(5)
+# 	callb("something")
 
 
-def mainFunc():
-	print("Here we go")
-	loop = asyncio.new_event_loop()
-	t = threading.Thread(target=waitFunc,args=(callbackFunc,loop))
-	t.start()
-	t.join()
-	# waitFunc(callbackFunc)
-	print("done")
+# def mainFunc():
+# 	print("Here we go")
+# 	loop = asyncio.new_event_loop()
+# 	t = threading.Thread(target=waitFunc,args=(callbackFunc,loop))
+# 	t.start()
+# 	t.join()
+# 	# waitFunc(callbackFunc)
+# 	print("done")
 
-mainFunc()
+# mainFunc()
+from tkinter import messagebox
 
+MsgBox = messagebox.askquestion ('YTDL','Combine Audio and Video tracks?',icon = 'info')
+print(MsgBox)

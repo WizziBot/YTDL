@@ -3,15 +3,11 @@
         "displayChrome": "yes",
         "downloadAudio": "yes",
         "downloadVideo": "yes",
-        "fileNames": [
-            "Drunk Arcade",
-            "Australia",
-            "Witcher in 8k"
-        ],
+        "fileNames": [],
         "outputAudioFormat": "aac",
         "outputVideoFormat": "mp4",
-        "promptCombine": "no",
-        "useYoutubeTitle": "no",
+        "promptCombine": "yes",
+        "useYoutubeTitle": "yes",
         "verbose": "no"
     },
     "outputDir": "tests2",
