@@ -156,8 +156,8 @@ class MainGUI():
 			lbl = ttk.Label(self.mainframe, text=text, style="DG.TLabel").grid(column=1, row=i, sticky=W)
 			self.Labels.append(lbl)
 
-	async def waitUntil(arg):
-		MsgBox = messagebox.askquestion('YTDL','Combine Audio and Video tracks?',icon = 'info')
+	async def waitUntil(arg,title):
+		MsgBox = messagebox.askquestion('YTDL',f'Combine Audio and Video tracks of "{title}" ?',icon = 'info')
 		print("SELECTED: "+MsgBox+"\n")
 		if MsgBox == "yes":
 			return "y"

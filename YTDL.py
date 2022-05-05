@@ -143,7 +143,7 @@ async def main(isGUI,callback):
 			if isGUI:
 				print("Combine Audio and Video? [y/n]")
 				# insert callback here (will contain rest of main)
-				response = await callback()
+				response = await callback("-".join(targets[0][1].split("-")[1:]))
 				comb = response
 			else:
 				comb = input("Combine Audio and Video? [y/n]: ")
