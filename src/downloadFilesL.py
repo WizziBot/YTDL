@@ -58,10 +58,18 @@ async def main(urls,outDir):
 	if len(urls) < 1:
 		return
 	await asyncio.gather(*[process(url,outDir) for url in urls])
+	
+def chEx(path):
+	if not os.path.isdir(path):
+		os.mkdir(path)
 
 async def downloadUrls(urls,outDir):
 	# loop = asyncio.get_event_loop()
 	# loop.run_until_complete(main(urls,outDir))
+	path = os.path.join(os.path.abspath("."), outDir)
+	chEx(path)
+	path = os.path.join(os.path.abspath("."), "temp")
+	chEx(path)
 	await main(urls,outDir)
 
 if __name__ == '__main__':

@@ -2,6 +2,10 @@
 import subprocess
 import os
 
+def chEx(path):
+	if not os.path.isdir(path):
+		os.mkdir(path)
+
 def toFormat(format,filePathIn,filePathOut,verbose):
 	if format == "mp4" or format == "webm" or format == "mp3" or format == "m4a":
 		cmd = f'ffmpeg -i {filePathIn} -acodec copy -vcodec copy {filePathOut}'
@@ -22,6 +26,8 @@ def toFormat(format,filePathIn,filePathOut,verbose):
 def muxTracks(video,audio,outDir,verbose):
 	outname = "-".join(video.split("-")[1:])
 	cmd = f'ffmpeg -an -i temp/{video} -vn -i temp/{audio} -r 30 -acodec copy -vcodec copy {outDir}/{outname}'
+	path = os.path.join(os.path.abspath("."), outDir)
+	chEx(path)
 	if verbose:
 		retVal = subprocess.call(cmd, shell=True)
 	else:

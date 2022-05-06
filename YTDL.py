@@ -93,9 +93,9 @@ def YTDL_Links(origUrl,config,i,itags):
 			filePrefix = title
 	return ((videolnk,"video-"+filePrefix+"."+videotyp),(audiolnk,"audio-"+filePrefix+"."+audiotyp)), (videoMins,videoSecs)
 
-def mainloop(callback,loop):
+def mainloop(logger,callback,loop):
 	asyncio.set_event_loop(loop)
-	status = loop.run_until_complete(main(True,callback))
+	status = loop.run_until_complete(main(logger,True,callback))
 	if status == 0:
 		print("STATUS: SUCCESS")
 	else:
@@ -103,7 +103,7 @@ def mainloop(callback,loop):
 	loop.close()
 
 
-async def main(isGUI,callback):
+async def main(logger,isGUI,callback):
 	with open("config.json","r") as f:
 		raw = f.read()
 		if raw == "":
@@ -184,4 +184,5 @@ async def main(isGUI,callback):
 	return 0
 
 if __name__ == "__main__":
-	asyncio.run(main(False,0))
+	import sys
+	asyncio.run(main(False,False,0))

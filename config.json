@@ -8,8 +8,8 @@
         "outputVideoFormat": "mp4",
         "promptCombine": "yes",
         "useYoutubeTitle": "yes",
-        "verbose": "no"
+        "verbose": "yes"
     },
-    "outputDir": "output",
+    "outputDir": "output3",
     "urlsDir": "urls.txt"
 }

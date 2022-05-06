@@ -24,6 +24,11 @@ class PrintLogger(object):
 
 	def flush(self):
 		pass
+	
+	def fileno(*args):
+		print("FNARGS")
+		print(args)
+		return 1
 
 def styleConfig(style,font):
 	# style.theme_use("default")
@@ -169,16 +174,16 @@ class MainGUI():
 			self.mainRunning = True
 			self.mainloop = asyncio.new_event_loop()
 			if self.config["options"]["promptCombine"]:
-				self.t = threading.Thread(target=mainloop,args=(self.waitUntil,self.mainloop))
+				self.t = threading.Thread(target=mainloop,args=(self.logger,self.waitUntil,self.mainloop))
 			else:
-				self.t = threading.Thread(target=mainloop,args=(0,self.mainloop))
+				self.t = threading.Thread(target=mainloop,args=(self.logger,0,self.mainloop))
 			self.t.start()
 		elif not self.t.is_alive():
 			self.mainloop = asyncio.new_event_loop()
 			if self.config["options"]["promptCombine"]:
-				self.t = threading.Thread(target=mainloop,args=(self.waitUntil,self.mainloop))
+				self.t = threading.Thread(target=mainloop,args=(self.logger,self.waitUntil,self.mainloop))
 			else:
-				self.t = threading.Thread(target=mainloop,args=(0,self.mainloop))
+				self.t = threading.Thread(target=mainloop,args=(self.logger,0,self.mainloop))
 			self.t.start()
 
 	def on_closing(self):

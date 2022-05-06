@@ -42,7 +42,15 @@ import threading
 # 	print("done")
 
 # mainFunc()
-from tkinter import messagebox
+# from tkinter import messagebox
 
-MsgBox = messagebox.askquestion ('YTDL','Combine Audio and Video tracks?',icon = 'info')
-print(MsgBox)
+# MsgBox = messagebox.askquestion ('YTDL','Combine Audio and Video tracks?',icon = 'info')
+# print(MsgBox)
+
+import os
+path = os.path.join(os.path.abspath("."), "test2/") 
+if not os.path.isdir(path):
+	os.mkdir(path)
+else:
+	print("EXISTS")
+
