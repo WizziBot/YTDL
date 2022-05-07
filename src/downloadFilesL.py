@@ -54,23 +54,23 @@ async def process(target,outDir):
 				shutil.copyfileobj(fd, wfd)
 
 
-async def main(urls,outDir):
-	if len(urls) < 1:
+async def main(targets,outDir):
+	if len(targets) < 1:
 		return
-	await asyncio.gather(*[process(url,outDir) for url in urls])
+	await asyncio.gather(*[process(target,outDir) for target in targets])
 	
 def chEx(path):
 	if not os.path.isdir(path):
 		os.mkdir(path)
 
-async def downloadUrls(urls,outDir):
+async def downloadUrls(targets,outDir):
 	# loop = asyncio.get_event_loop()
 	# loop.run_until_complete(main(urls,outDir))
 	path = os.path.join(os.path.abspath("."), outDir)
 	chEx(path)
 	path = os.path.join(os.path.abspath("."), "temp")
 	chEx(path)
-	await main(urls,outDir)
+	await main(targets,outDir)
 
 if __name__ == '__main__':
 

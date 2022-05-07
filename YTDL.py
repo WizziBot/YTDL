@@ -4,8 +4,8 @@ import src.downloadFilesL as dl
 import src.networkRequest as nr
 import src.combine as cmb
 import re
-import time
 import asyncio
+from os import rename
 
 def validateURLS(urls):
 	for url in urls:
@@ -42,6 +42,14 @@ def verifyConfig(cfg):
 					return 1
 	return 0
 
+def cleanFileName(orig):
+	modname = ""
+	for x in orig:
+		if x=="?" or x=="*" or x=="|" or x=="<" or x==">" or x=="\\" or x=="/" or x==":" or x=="\"":
+			continue
+		else:
+			modname += x
+	return modname
 
 def YTDL_Links(origUrl,config,i,itags):
 	vidEn = True
@@ -52,6 +60,7 @@ def YTDL_Links(origUrl,config,i,itags):
 		audEn = False
 	# Verify links
 	title,links = nr.getLinks(origUrl,config)
+	origtitle = title
 	print("\n[Processing Link Data]\n")
 	videolnk = ""
 	videotyp = ""
@@ -82,16 +91,17 @@ def YTDL_Links(origUrl,config,i,itags):
 	if config["useYoutubeTitle"] != "yes":
 		try:
 			filePrefix = config["fileNames"][i].replace(" ","_")
+			origtitle = cleanFileName(config["fileNames"][i])
 		except IndexError:
 			print("Error: Insuficient file names. (Check config.json)")
 			print("Using Link Name...")
 			filePrefix = re.search("www\.youtube\.com/watch\?v=([^&]*)",origUrl).group(1)
 	else:
 		if len(title) > 45:
-			filePrefix = title[:45]
+			filePrefix = title[:45].replace(" ","_")
 		else:
-			filePrefix = title
-	return ((videolnk,"video-"+filePrefix+"."+videotyp),(audiolnk,"audio-"+filePrefix+"."+audiotyp)), (videoMins,videoSecs)
+			filePrefix = title.replace(" ","_")
+	return origtitle, ((videolnk,"video-"+filePrefix+"."+videotyp),(audiolnk,"audio-"+filePrefix+"."+audiotyp)), (videoMins,videoSecs)
 
 def mainloop(logger,callback,loop):
 	asyncio.set_event_loop(loop)
@@ -131,7 +141,7 @@ async def main(logger,isGUI,callback):
 				return 1
 	for i,url in enumerate(validateURLS(urls)):
 		print("[Processing] :",url)
-		targets,videoTime = YTDL_Links(url,config,i,itags)
+		origTitle,targets,videoTime = YTDL_Links(url,config,i,itags)
 		if targets:
 			print("[Retrieved Link Data]\n")
 		else:
@@ -152,34 +162,39 @@ async def main(logger,isGUI,callback):
 			print("[Downloading] ("+config["fileNames"][i]+") ("+str(videoTime[0])+"m "+str(videoTime[1])+"s"+")\n")
 		else:
 			print("[Downloading] ("+"-".join(targets[0][1].split("-")[1:])+") ("+str(videoTime[0])+"m "+str(videoTime[1])+"s"+")\n")
-		if comb == "y" or config["promptCombine"] == "no":
+		if (comb == "y" or config["promptCombine"] == "no") and config["downloadVideo"] == "yes" and config["downloadAudio"] == "yes":
 			await dl.downloadUrls(targets,"temp/")
 			print("[Combining]")
-			result = cmb.autoCombine(targets[0][1],targets[1][1],outDir,config)
-			if result:
+			result,path = cmb.autoCombine(targets[0][1],targets[1][1],outDir,config)
+			if result == 0:
+				rename(path,outDir+"/"+origTitle+"."+config["outputVideoFormat"])
 				print("[Combined Video and Audio tracks]\n")
 			else:
-				print("Error: Failed to combine Video and Audio tracks\n")
+				print("Error: Failed to combine Video and Audio tracks ("+str(result)+")\n")
 		else:
 			if config["downloadVideo"] == "yes" and targets[0][1].split(".")[-1] != config["outputVideoFormat"]:
 				await dl.downloadUrls([targets[0]],"temp/")
-				result = cmb.toFormat(config["outputVideoFormat"],"temp/"+targets[0][1],outDir+"/"+"".join(targets[0][1].split(".")[:-1])+"."+config["outputVideoFormat"],(config["verbose"]=="yes"))
+				result, path = cmb.toFormat(config["outputVideoFormat"],"temp/"+targets[0][1],outDir+"/"+"".join(targets[0][1].split(".")[:-1])+"."+config["outputVideoFormat"],(config["verbose"]=="yes"))
 				if result == 0:
+					rename(path,outDir+"/"+origTitle+"."+config["outputVideoFormat"])
 					print(f'[Converted Video to {config["outputVideoFormat"]}]')
 				else:
 					print('Error: Failed to convert Video to '+config["outputVideoFormat"])
 			elif config["downloadVideo"] == "yes":
 				await dl.downloadUrls([targets[0]],outDir+"/")
+				rename(outDir+"/"+targets[0][1],outDir+"/"+"."+origTitle+config["outputVideoFormat"])
 			if config["downloadAudio"] == "yes" and targets[1][1].split(".")[-1] != config["outputAudioFormat"]:
 				await dl.downloadUrls([targets[1]],"temp/")
 
-				result = cmb.toFormat(config["outputAudioFormat"],"temp/"+targets[1][1],outDir+"/"+"".join(targets[1][1].split(".")[:-1])+"."+config["outputAudioFormat"],(config["verbose"]=="yes"))
+				result, path = cmb.toFormat(config["outputAudioFormat"],"temp/"+targets[1][1],outDir+"/"+"".join(targets[1][1].split(".")[:-1])+"."+config["outputAudioFormat"],(config["verbose"]=="yes"))
 				if result == 0:
+					rename(path,outDir+"/"+origTitle+"."+config["outputAudioFormat"])
 					print(f'[Converted Audio to {config["outputAudioFormat"]}]')
 				else:
 					print('Error: Failed to convert Audio to '+config["outputAudioFormat"])
 			elif config["downloadAudio"] == "yes":
 				await dl.downloadUrls([targets[1]],outDir+"/")
+				rename(outDir+"/"+targets[1][1],outDir+"/"+origTitle+"."+config["outputAudioFormat"])
 	print("\n----DONE----\n")
 	return 0
 

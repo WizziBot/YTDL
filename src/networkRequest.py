@@ -54,7 +54,7 @@ def getLinks(origUrl,config):
 			if len(titleResults2) > 0:
 				titleResults= titleResults2
 			if titleResults[0].text != "":
-				title = titleResults[0].text.replace(" ","_")
+				title = titleResults[0].text
 				modtitle = ""
 				for x in title:
 					if x=="?" or x=="*" or x=="|" or x=="<" or x==">" or x=="\\" or x=="/" or x==":" or x=="\"":
@@ -64,7 +64,7 @@ def getLinks(origUrl,config):
 				title = modtitle
 				break
 	else:
-		title = titleResults[0].text.replace(" ","_")
+		title = titleResults[0].text
 		modtitle = ""
 		for x in title:
 			if x=="?" or x=="*" or x=="|" or x=="<" or x==">" or x=="\\" or x=="/" or x==":" or x=="\"":

@@ -10,6 +10,6 @@
         "useYoutubeTitle": "yes",
         "verbose": "yes"
     },
-    "outputDir": "output3",
+    "outputDir": "output",
     "urlsDir": "urls.txt"
 }
