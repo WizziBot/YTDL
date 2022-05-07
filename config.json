@@ -8,7 +8,7 @@
         "outputVideoFormat": "mp4",
         "promptCombine": "yes",
         "useYoutubeTitle": "yes",
-        "verbose": "yes"
+        "verbose": "no"
     },
     "outputDir": "output",
     "urlsDir": "urls.txt"

@@ -182,7 +182,7 @@ async def main(logger,isGUI,callback):
 					print('Error: Failed to convert Video to '+config["outputVideoFormat"])
 			elif config["downloadVideo"] == "yes":
 				await dl.downloadUrls([targets[0]],outDir+"/")
-				rename(outDir+"/"+targets[0][1],outDir+"/"+"."+origTitle+config["outputVideoFormat"])
+				rename(outDir+"/"+targets[0][1],outDir+"/"+origTitle+"."+config["outputVideoFormat"])
 			if config["downloadAudio"] == "yes" and targets[1][1].split(".")[-1] != config["outputAudioFormat"]:
 				await dl.downloadUrls([targets[1]],"temp/")
 
