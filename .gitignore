@@ -4,3 +4,4 @@
 *.aac
 *.pyc
 src/__pycache__/
+*.txt
