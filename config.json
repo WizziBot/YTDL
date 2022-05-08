@@ -2,13 +2,15 @@
     "options": {
         "displayChrome": "yes",
         "downloadAudio": "yes",
-        "downloadVideo": "yes",
-        "fileNames": [],
+        "downloadVideo": "no",
+        "fileNames": [
+            "Lazy Mornings Dreamhop"
+        ],
         "outputAudioFormat": "aac",
         "outputVideoFormat": "mp4",
         "promptCombine": "yes",
-        "useYoutubeTitle": "yes",
-        "verbose": "no"
+        "useYoutubeTitle": "no",
+        "verbose": "yes"
     },
     "outputDir": "output",
     "urlsDir": "urls.txt"

@@ -164,7 +164,7 @@ async def main(logger,isGUI,callback):
 			print("[Downloading] ("+"-".join(targets[0][1].split("-")[1:])+") ("+str(videoTime[0])+"m "+str(videoTime[1])+"s"+")\n")
 		if (comb == "y" or config["promptCombine"] == "no") and config["downloadVideo"] == "yes" and config["downloadAudio"] == "yes":
 			await dl.downloadUrls(targets,"temp/")
-			print("[Combining]")
+			print("Combining, Please wait.")
 			result,path = cmb.autoCombine(targets[0][1],targets[1][1],outDir,config)
 			if result == 0:
 				rename(path,outDir+"/"+origTitle+"."+config["outputVideoFormat"])
@@ -174,6 +174,7 @@ async def main(logger,isGUI,callback):
 		else:
 			if config["downloadVideo"] == "yes" and targets[0][1].split(".")[-1] != config["outputVideoFormat"]:
 				await dl.downloadUrls([targets[0]],"temp/")
+				print("Converting, Please wait.")
 				result, path = cmb.toFormat(config["outputVideoFormat"],"temp/"+targets[0][1],outDir+"/"+"".join(targets[0][1].split(".")[:-1])+"."+config["outputVideoFormat"],(config["verbose"]=="yes"))
 				if result == 0:
 					rename(path,outDir+"/"+origTitle+"."+config["outputVideoFormat"])
@@ -185,7 +186,7 @@ async def main(logger,isGUI,callback):
 				rename(outDir+"/"+targets[0][1],outDir+"/"+origTitle+"."+config["outputVideoFormat"])
 			if config["downloadAudio"] == "yes" and targets[1][1].split(".")[-1] != config["outputAudioFormat"]:
 				await dl.downloadUrls([targets[1]],"temp/")
-
+				print("Converting, Please wait.")
 				result, path = cmb.toFormat(config["outputAudioFormat"],"temp/"+targets[1][1],outDir+"/"+"".join(targets[1][1].split(".")[:-1])+"."+config["outputAudioFormat"],(config["verbose"]=="yes"))
 				if result == 0:
 					rename(path,outDir+"/"+origTitle+"."+config["outputAudioFormat"])
