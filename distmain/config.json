@@ -1,0 +1,17 @@
+{
+    "options": {
+        "displayChrome": "yes",
+        "downloadAudio": "yes",
+        "downloadVideo": "yes",
+        "fileNames": [
+            "Some Video"
+        ],
+        "outputAudioFormat": "aac",
+        "outputVideoFormat": "mp4",
+        "promptCombine": "yes",
+        "useYoutubeTitle": "no",
+        "verbose": "yes"
+    },
+    "outputDir": "output",
+    "urlsDir": "urls.txt"
+}
