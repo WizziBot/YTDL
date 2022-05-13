@@ -4,12 +4,12 @@
         "downloadAudio": "yes",
         "downloadVideo": "no",
         "fileNames": [
-            "Lazy Mornings Dreamhop"
+            "Ominous Monastery Choir"
         ],
         "outputAudioFormat": "aac",
         "outputVideoFormat": "mp4",
         "promptCombine": "yes",
-        "useYoutubeTitle": "no",
+        "useYoutubeTitle": "yes",
         "verbose": "yes"
     },
     "outputDir": "output",
