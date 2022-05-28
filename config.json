@@ -12,6 +12,6 @@
         "useYoutubeTitle": "yes",
         "verbose": "yes"
     },
-    "outputDir": "classics",
+    "outputDir": "ambience",
     "urlsDir": "urls.txt"
 }

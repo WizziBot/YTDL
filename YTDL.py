@@ -168,7 +168,7 @@ async def main(logger,isGUI,callback):
 			print("[Downloading] ("+"-".join(targets[0][1].split("-")[1:])+") ("+str(videoTime[0])+"m "+str(videoTime[1])+"s"+")\n")
 
 		# Creates out dir if not exist
-		chEx(config["outputDir"])
+		chEx(outDir)
 
 		if (comb == "y" or config["promptCombine"] == "no") and config["downloadVideo"] == "yes" and config["downloadAudio"] == "yes":
 			await dl.downloadUrls(targets,"temp/")
