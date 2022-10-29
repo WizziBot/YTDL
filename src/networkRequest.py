@@ -101,7 +101,7 @@ def getLinks(origUrl,config):
 			url = log["params"]["request"]["url"]
 
 			#RegExp
-			xre = re.search("^https://rr[1|2|3|4|5]---sn-.*\.googlevideo\.com/videoplayback?.*itag=([0-9]*).*mime=(.*)%2F([a-z0-9]*).*&dur=([0-9]*\.[0-9]*)", url)
+			xre = re.search("^https://rr[1|2|3|4|5|6|7|8|9]---sn-.*\.googlevideo\.com/videoplayback?.*itag=([0-9]*).*mime=(.*)%2F([a-z0-9]*).*&dur=([0-9]*\.[0-9]*)", url)
 			if xre:
 				links.append((xre.string,xre.group(2),xre.group(3),str(xre.group(1)),xre.group(4)))
 				if len(links) >=10:
