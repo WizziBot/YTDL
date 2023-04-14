@@ -1,4 +1,5 @@
 from selenium import webdriver
+from selenium.webdriver.common.by import By
 from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 import time
 import json
@@ -31,16 +32,16 @@ def getLinks(origUrl,config):
 	driver.get(origUrl)
 	# Wait for ads and then erases browser data (avoid polluting the links with the ad media)
 	time.sleep(2)
-	isAds = driver.find_elements_by_css_selector('#player-overlay\:0')
+	isAds = driver.find_elements(By.CSS_SELECTOR,'#player-overlay\:0')
 	while len(isAds) > 0:
 		# print("Halting for ads..")
 		driver.get_log("performance")
 		time.sleep(0.5)
-		isAds = driver.find_elements_by_css_selector('#player-overlay\:0')
+		isAds = driver.find_elements(By.CSS_SELECTOR,'#player-overlay\:0')
 
 	time.sleep(delay)
-	titleResults = driver.find_elements_by_css_selector('#container > h1 > yt-formatted-string')
-	titleResults2 = driver.find_elements_by_css_selector('#title > h1 > yt-formatted-string')
+	titleResults = driver.find_elements(By.CSS_SELECTOR,'#container > h1 > yt-formatted-string')
+	titleResults2 = driver.find_elements(By.CSS_SELECTOR,'#title > h1 > yt-formatted-string')
 	if len(titleResults2) > 0:
 		titleResults= titleResults2
 	title="default"
@@ -49,8 +50,8 @@ def getLinks(origUrl,config):
 	elif titleResults[0].text == "":
 		for _ in range(retries):
 			time.sleep(1)
-			titleResults = driver.find_elements_by_css_selector('#container > h1 > yt-formatted-string')
-			titleResults2 = driver.find_elements_by_css_selector('#title > h1 > yt-formatted-string')
+			titleResults = driver.find_elements(By.CSS_SELECTOR,'#container > h1 > yt-formatted-string')
+			titleResults2 = driver.find_elements(By.CSS_SELECTOR,'#title > h1 > yt-formatted-string')
 			if len(titleResults2) > 0:
 				titleResults= titleResults2
 			if titleResults[0].text != "":
@@ -75,7 +76,11 @@ def getLinks(origUrl,config):
 	logs = driver.get_log("performance")
 
 	# network_log.json
-	with open("temp/network_log.json", "w", encoding="utf-8") as f:
+	wx_ext = "x"
+	if os.path.exists('temp/network_log.json'):
+		wx_ext = "w"
+		
+	with open("temp/network_log.json", wx_ext, encoding="utf-8") as f:
 		f.write("[")
 
 		# Iterates every logs and parses it using JSON

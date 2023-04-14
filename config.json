@@ -3,15 +3,13 @@
         "displayChrome": "yes",
         "downloadAudio": "yes",
         "downloadVideo": "no",
-        "fileNames": [
-            "Ominous Monastery Choir"
-        ],
+        "fileNames": [],
         "outputAudioFormat": "aac",
         "outputVideoFormat": "mp4",
         "promptCombine": "yes",
         "useYoutubeTitle": "yes",
         "verbose": "yes"
     },
-    "outputDir": "ambience",
+    "outputDir": "s",
     "urlsDir": "urls.txt"
 }
